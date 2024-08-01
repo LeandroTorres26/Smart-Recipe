@@ -1,37 +1,42 @@
 <script setup lang="ts">
-defineProps<{
-  msg: string
-}>()
-
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { ref } from 'vue'
 
-const apiKey = 'AIzaSyAFUs9LfPfDNjYcAkLHbvKygBen0NO5Ynk' // colocar como env variable depois
+interface Recipe {
+  name: string
+  ingredients: string[]
+  instructions: string[]
+}
+const apiKey = import.meta.env.VITE_API_KEY
 const genAI = new GoogleGenerativeAI(apiKey)
 const prompt = ref('')
-const response = ref('')
+const recipe = ref<Recipe>({
+  name: '',
+  ingredients: [],
+  instructions: []
+})
 
+let loaded = false
 async function generatePrompt() {
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
     generationConfig: { responseMimeType: 'application/json' }
   })
   try {
-    console.log(prompt.value)
     const result = await model.generateContent(
       prompt.value +
         ` using this JSON schema:
         { "type": "object",
           "properties": {
-            "recipe_name": { "type": "string" },
+            "name": { "type": "string" },
             "ingredients": { "type": "array" },
             "instructions": { "type": "array" },
           }
         }`
     )
     const text = result.response.text()
-    response.value = JSON.parse(text)
-    console.log(JSON.parse(text))
+    recipe.value = JSON.parse(text)
+    loaded = true
   } catch (error) {
     console.error(error)
   }
@@ -41,19 +46,18 @@ async function generatePrompt() {
 <template>
   <div class="container">
     <input type="text" v-model="prompt" @keydown.enter="generatePrompt" />
-    <!-- <p class="response">{{ response }}</p> -->
-    <div class="response">
-      <h2>{{ response.recipe_name }}</h2>
-      <h3>Ingredients</h3>
+    <div class="recipe">
+      <h2>{{ recipe.name }}</h2>
+      <h3 v-if="loaded">Ingredients</h3>
       <ul class="ingredients">
-        <li v-for="ingredient in response.ingredients">
+        <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
           {{ ingredient }}
         </li>
       </ul>
-      <h3>Instructions</h3>
+      <h3 v-if="loaded">Instructions</h3>
       <ul class="instructions">
-        <li v-for="instructions in response.instructions">
-          {{ instructions }}
+        <li v-for="(instruction, index) in recipe.instructions" :key="index">
+          {{ instruction }}
         </li>
       </ul>
     </div>
@@ -65,9 +69,9 @@ async function generatePrompt() {
   min-width: clamp(300px, 50vw, 1000px);
 }
 input[type='text'] {
-  padding: 1rem;
+  padding: var(--s);
   width: 100%;
-  min-height: 3.5rem;
+  /* min-height: 3.5rem; */
   border-radius: var(--radius);
   border: 1px solid var(--black);
   transition: 0.3s;
@@ -77,7 +81,7 @@ input[type='text']:is(:active, :focus) {
   outline: var(--primary) 1px solid;
 }
 
-.response {
+.recipe {
   padding: var(--m);
 }
 

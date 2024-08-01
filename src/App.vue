@@ -6,6 +6,7 @@ import InputAi from './components/InputAi.vue'
   <!-- <header>header</header> -->
 
   <main>
+    <h1 class="cta">Add ingredients</h1>
     <InputAi />
   </main>
 </template>
@@ -36,5 +37,10 @@ header {
     place-items: flex-start;
     flex-wrap: wrap;
   }
+}
+
+.cta {
+  text-align: center;
+  text-transform: lowercase;
 }
 </style>
