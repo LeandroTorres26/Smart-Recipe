@@ -2,6 +2,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { ref } from 'vue'
 
+const props = defineProps({
+  IngredientList: {
+    type: Array,
+    default: () => []
+  }
+})
+
 interface Recipe {
   name: string
   ingredients: string[]
@@ -9,7 +16,7 @@ interface Recipe {
 }
 const apiKey = import.meta.env.VITE_API_KEY
 const genAI = new GoogleGenerativeAI(apiKey)
-const prompt = ref('')
+
 const recipe = ref<Recipe>({
   name: '',
   ingredients: [],
@@ -24,8 +31,9 @@ async function generatePrompt() {
   })
   try {
     const result = await model.generateContent(
-      prompt.value +
-        ` using this JSON schema:
+      `write the recipe on the language of the prompt. I have these ingredients available:` +
+        props?.IngredientList?.join(', ') +
+        `, suggest a recipe using this JSON schema:
         { "type": "object",
           "properties": {
             "name": { "type": "string" },
@@ -45,7 +53,7 @@ async function generatePrompt() {
 
 <template>
   <div class="container">
-    <input type="text" v-model="prompt" @keydown.enter="generatePrompt" />
+    <button @click="generatePrompt" v-if="props.IngredientList?.length > 0">Generate</button>
     <div class="recipe">
       <h2>{{ recipe.name }}</h2>
       <h3 v-if="loaded">Ingredients</h3>
@@ -65,20 +73,17 @@ async function generatePrompt() {
 </template>
 
 <style scoped>
-.container {
-  min-width: clamp(300px, 50vw, 1000px);
-}
-input[type='text'] {
-  padding: var(--s);
-  width: 100%;
-  /* min-height: 3.5rem; */
-  border-radius: var(--radius);
-  border: 1px solid var(--black);
-  transition: 0.3s;
+button {
+  display: block;
+  padding: var(--m) var(--l);
+  margin: 0 var(--m) 0 auto;
+  border: none;
+  border-radius: var(--round);
+  background-color: var(--primary);
+  cursor: pointer;
+  color: var(--white);
   font-size: var(--text-h3);
-}
-input[type='text']:is(:active, :focus) {
-  outline: var(--primary) 1px solid;
+  font-weight: bold;
 }
 
 .recipe {
@@ -86,7 +91,7 @@ input[type='text']:is(:active, :focus) {
 }
 
 ul {
-  padding-left: var(--sm);
+  padding-left: var(--m);
 }
 li {
   list-style: disc;

@@ -55,7 +55,8 @@
 
 /* Radius */
 :root {
-  --radius: 1.5rem;
+  --rounded-square: 0.3rem;
+  --round: 1.5rem;
 }
 
 *,

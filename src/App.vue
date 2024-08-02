@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import InputAi from './components/InputAi.vue'
+import IngredientInput from './components/IngredientInput.vue'
 </script>
 
 <template>
   <!-- <header>header</header> -->
 
   <main>
-    <h1 class="cta">Add ingredients</h1>
-    <InputAi />
+    <IngredientInput />
   </main>
 </template>
 
-<style scoped>
+<style>
 header {
   line-height: 1.5;
 }
@@ -39,8 +38,8 @@ header {
   }
 }
 
-.cta {
-  text-align: center;
-  text-transform: lowercase;
+.container {
+  width: clamp(300px, 50vw, 700px);
+  margin: var(--m);
 }
 </style>
