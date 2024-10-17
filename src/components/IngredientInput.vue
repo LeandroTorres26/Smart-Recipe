@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import RecipeResponse from './RecipeResponse.vue'
-import Button from './Button/Button.vue'
+import RecipeResponse from '@/components/RecipeResponse.vue'
+import Button from '@/components/Button/Button.vue'
 
 const prompt = ref('')
 
@@ -14,7 +14,7 @@ function addIngredient() {
   }
 }
 
-function removeIngredient(index) {
+function removeIngredient(index: number) {
   ingredientList.value.splice(index, 1)
 }
 </script>
@@ -27,15 +27,17 @@ function removeIngredient(index) {
       <!-- <button @click="addIngredient">Add</button> -->
       <Button @click="addIngredient" text="Add" />
     </div>
-    <ul class="ingredientList" v-if="ingredientList.length > 0">
-      <li
-        v-for="(ingredient, index) in ingredientList"
-        :key="index"
-        @click="removeIngredient(index)"
-      >
-        {{ ingredient }}
-      </li>
-    </ul>
+    <Transition>
+      <ul class="ingredientList" v-if="ingredientList.length > 0">
+        <li
+          v-for="(ingredient, index) in ingredientList"
+          :key="index"
+          @click="removeIngredient(index)"
+        >
+          {{ ingredient }}
+        </li>
+      </ul>
+    </Transition>
   </div>
   <RecipeResponse :IngredientList="ingredientList" />
 </template>
@@ -94,9 +96,19 @@ button {
   position: relative;
   cursor: pointer;
   transition: 0.7s;
+  animation: fadeIn 0.5s ease-in-out;
   &:hover {
     /* background-color: red; */
     box-shadow: inset 0 0 0 2em red;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>

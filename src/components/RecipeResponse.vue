@@ -53,7 +53,9 @@ async function generatePrompt() {
 
 <template>
   <div class="container">
-    <button @click="generatePrompt" v-if="props.IngredientList?.length > 0">Generate</button>
+    <Transition>
+      <button @click="generatePrompt" v-if="props.IngredientList?.length > 0">Generate</button>
+    </Transition>
     <div class="recipe">
       <h2>{{ recipe.name }}</h2>
       <h3 v-if="loaded">Ingredients</h3>
