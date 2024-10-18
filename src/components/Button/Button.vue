@@ -1,18 +1,37 @@
 <script setup lang="ts">
 const props = defineProps({
-  text: String
+  text: String,
+  width: {
+    type: String,
+    default: false
+  },
+  height: {
+    type: String,
+    default: 'auto'
+  },
+  padding: {
+    type: String,
+    default: false
+  },
+  margin: {
+    type: String,
+    default: false
+  }
 })
 </script>
 
 <template>
-  <button>{{ text }}</button>
+  <button :style="{ width: width, height: height, padding: padding, margin: margin }">
+    {{ text }}
+  </button>
 </template>
 
 <style scoped>
 button {
+  display: block;
   border: none;
-  border-radius: 0 var(--round) var(--round) 0;
-  width: clamp(1rem, 20%, 10rem);
+  border-radius: var(--round);
+  /* width: clamp(1rem, 20%, 10rem); */
   background-color: var(--primary);
   color: var(--white);
   font-weight: bold;

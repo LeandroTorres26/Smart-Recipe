@@ -23,7 +23,7 @@ const recipe = ref<Recipe>({
   instructions: []
 })
 
-let loaded = false
+const loaded = ref(false)
 async function generatePrompt() {
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
@@ -44,50 +44,40 @@ async function generatePrompt() {
     )
     const text = result.response.text()
     recipe.value = JSON.parse(text)
-    loaded = true
+    loaded.value = true
   } catch (error) {
     console.error(error)
   }
 }
+
+defineExpose({
+  generatePrompt
+})
 </script>
 
 <template>
-  <div class="container">
-    <Transition>
-      <button @click="generatePrompt" v-if="props.IngredientList?.length > 0">Generate</button>
-    </Transition>
-    <div class="recipe">
-      <h2>{{ recipe.name }}</h2>
-      <h3 v-if="loaded">Ingredients</h3>
-      <ul class="ingredients">
-        <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
-          {{ ingredient }}
-        </li>
-      </ul>
-      <h3 v-if="loaded">Instructions</h3>
-      <ul class="instructions">
-        <li v-for="(instruction, index) in recipe.instructions" :key="index">
-          {{ instruction }}
-        </li>
-      </ul>
+  <Transition>
+    <div class="container" v-if="loaded" :class="{ loaded: loaded }">
+      <div class="recipe">
+        <h2>{{ recipe.name }}</h2>
+        <h3 v-if="loaded">Ingredients</h3>
+        <ul class="ingredients">
+          <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
+            {{ ingredient }}
+          </li>
+        </ul>
+        <h3 v-if="loaded">Instructions</h3>
+        <ul class="instructions">
+          <li v-for="(instruction, index) in recipe.instructions" :key="index">
+            {{ instruction }}
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style scoped>
-button {
-  display: block;
-  padding: var(--m) var(--l);
-  margin: 0 var(--m) 0 auto;
-  border: none;
-  border-radius: var(--round);
-  background-color: var(--primary);
-  cursor: pointer;
-  color: var(--white);
-  font-size: var(--text-h3);
-  font-weight: bold;
-}
-
 .recipe {
   padding: var(--m);
 }
@@ -97,5 +87,18 @@ ul {
 }
 li {
   list-style: disc;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: 1s ease-in-out;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  @media (min-width: 1024px) {
+    width: 0;
+  }
 }
 </style>
