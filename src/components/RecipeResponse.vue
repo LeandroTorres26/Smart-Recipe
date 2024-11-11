@@ -11,7 +11,9 @@ const props = defineProps({
 
 interface Recipe {
   name: string
+  sectiontitle1: string
   ingredients: string[]
+  sectiontitle2: string
   instructions: string[]
 }
 const apiKey = import.meta.env.VITE_API_KEY
@@ -19,7 +21,9 @@ const genAI = new GoogleGenerativeAI(apiKey)
 
 const recipe = ref<Recipe>({
   name: '',
+  sectiontitle1: '',
   ingredients: [],
+  sectiontitle2: '',
   instructions: []
 })
 
