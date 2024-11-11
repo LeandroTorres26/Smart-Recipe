@@ -31,15 +31,17 @@ async function generatePrompt() {
   })
   try {
     const result = await model.generateContent(
-      `write the recipe on the language of the prompt. I have these ingredients available:` +
+      `write the recipe on the language of the prompt (do not mix languages). I have these ingredients available:` +
         props?.IngredientList?.join(', ') +
         `, suggest a recipe using this JSON schema:
         { "type": "object",
           "properties": {
             "name": { "type": "string" },
+            "sectiontitle1": { "type": "string" },
             "ingredients": { "type": "array" },
+            "sectiontitle2": { "type": "string" },
             "instructions": { "type": "array" },
-          }
+            }
         }`
     )
     const text = result.response.text()
@@ -60,13 +62,13 @@ defineExpose({
     <div class="container" v-if="loaded" :class="{ loaded: loaded }">
       <div class="recipe">
         <h2>{{ recipe.name }}</h2>
-        <h3 v-if="loaded">Ingredients</h3>
+        <h3 v-if="loaded">{{ recipe.sectiontitle1 }}</h3>
         <ul class="ingredients">
           <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
             {{ ingredient }}
           </li>
         </ul>
-        <h3 v-if="loaded">Instructions</h3>
+        <h3 v-if="loaded">{{ recipe.sectiontitle2 }}</h3>
         <ul class="instructions">
           <li v-for="(instruction, index) in recipe.instructions" :key="index">
             {{ instruction }}
